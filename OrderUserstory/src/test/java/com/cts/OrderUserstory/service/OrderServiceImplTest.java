@@ -39,18 +39,10 @@ class OrderServiceImplTest {
 
 	@MockBean
 	private ProfileClient client;
-	
 
 	List<ProfileModel> list = new ArrayList<>();
 	Order bookOrder = new Order(1, 123, "OrderType", "POS");
 	ProfileModel model = new ProfileModel(1L, "Profile X", "ProfileType", "Criteria1", "OrderType", "Shipment");
-
-//	@BeforeEach
-//	void setUpBeforeClass() {
-//
-//		
-//
-//	}
 
 	@Test
 	void testStampProfileWithOrder() {
@@ -66,26 +58,24 @@ class OrderServiceImplTest {
 
 	@Test
 	void testStampProfileWithOrderNotFound() throws RuntimeException {
-		System.out.println("*************");
+		log.info("*********Stamping Order with Profile Started********");
 		ProfileModel model1 = new ProfileModel(2L, "Profile X", "ProfileType", "Criteria1", "OrderType1", "Shipment");
 		list.add(model1);
-//		System.out.println(list);
+
 		when(client.getAllProfileDetails()).thenReturn(list);
 		String orderType = bookOrder.getOrderType();
-//		System.out.println(orderType);
+
 		for (ProfileModel profileModel : list) {
-//			System.out.println(profileModel.getCriteriaValue().equals(bookOrder.getOrderType()));
 			assertEquals(false, profileModel.getCriteriaValue().equals(bookOrder.getOrderType()));
-			
+
 		}
-		
-		Exception exception = assertThrows(RuntimeException.class,
-				() -> orderService.stampProfileWithOrder(bookOrder));
+
+		Exception exception = assertThrows(RuntimeException.class, () -> orderService.stampProfileWithOrder(bookOrder));
 		System.out.println(exception);
-		String msg="Could not find the Profile with order type: " + orderType;
-		
+		String msg = "Could not find the Profile with order type: " + orderType;
+
 		assertEquals(msg, exception.getMessage());
-		
+
 	}
 
 	@Test
@@ -97,14 +87,15 @@ class OrderServiceImplTest {
 	@Test
 	void testDeleteProfileNotFound() throws Exception {
 		when(orderRepository.findById(bookOrder.getOrderId())).thenReturn(Optional.empty());
-		Exception exception = assertThrows(OrderNotFoundException.class, () -> orderService.deleteProfile(bookOrder.getOrderId()));
-			assertEquals("Could not find the Order Id " + bookOrder.getOrderId(), exception.getMessage());
-		
+		Exception exception = assertThrows(OrderNotFoundException.class,
+				() -> orderService.deleteProfile(bookOrder.getOrderId()));
+		assertEquals("Could not find the Order Id " + bookOrder.getOrderId(), exception.getMessage());
+
 	}
-	
+
 	@Test
 	void testGetAllOrderDetails() {
-		List<Order> list=new ArrayList<>();
+		List<Order> list = new ArrayList<>();
 		list.add(bookOrder);
 		when(orderRepository.findAll()).thenReturn(list);
 		assertEquals(list.size(), orderService.getAllOrderDetails().size());
