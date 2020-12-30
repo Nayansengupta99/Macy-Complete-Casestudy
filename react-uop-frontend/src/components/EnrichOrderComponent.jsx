@@ -3,7 +3,7 @@ import OrderService from '../services/OrderService';
 
 class EnrichOrderComponent extends Component {
 
-constructor(props) {
+    constructor(props) {
         super(props)
         this.state = {
             orderId: '',
@@ -17,7 +17,7 @@ constructor(props) {
         this.changeOrderNumberHandler = this.changeOrderNumberHandler.bind(this);
         this.changeOrderTypeHandler = this.changeOrderTypeHandler.bind(this);
         this.enrichOrder = this.enrichOrder.bind(this);
-}
+    }
     changeOrderIdHandler = (event) => {
         this.setState({ orderId: event.target.value });
     }
@@ -35,13 +35,21 @@ constructor(props) {
             orderType: this.state.orderType
 
         };
- 
 
-        OrderService.enrichOrder(order).then(res => {
+
+        OrderService.enrichOrder(order).then((res) => {
+
+
             this.setState({ profileId: 'Order has been saved successfully for PROFILE ID: ' + res.data });
-            console.log(res.data);
             this.props.history.push('/enrichorder');
+        }).catch(err => {
+            if (err.response) {
+                this.setState({ profileId: 'Could not find the Profile with order type: ' + order.orderType });
+            }
+
         });
+
+
 
 
     }
@@ -79,8 +87,9 @@ constructor(props) {
                                     <button className="btn btn-danger" onClick={this.cancel.bind(this)} style={{ marginLeft: "10px" }}>Cancel</button>
                                 </form>
                                 <img height="46" width="100" align="right" src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Macy%27s_Inc.png"></img>
-                          </div>
-                            {profileId}
+                            </div>
+
+                            <p style={{ color: "red", fontSize: "20px" }} >{profileId}</p>
                         </div>
                     </div>
                 </div>
